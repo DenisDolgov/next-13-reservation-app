@@ -1,6 +1,11 @@
 import Header from "./components/Header";
 import SearchSideBar from "./components/SearchSideBar";
 import RestaurantCard from "./components/RestaurantCard";
+import {Metadata} from "next";
+
+export const metadata: Metadata = {
+    title: 'Search | Reservation App'
+}
 
 export default function Search() {
     return (
