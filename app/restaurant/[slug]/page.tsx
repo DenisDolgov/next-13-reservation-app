@@ -4,6 +4,10 @@ import Images from "./components/Images";
 import Reviews from "./components/Reviews";
 import ReservationCard from "./components/ReservationCard";
 
+export const metadata = {
+    title: 'Milesstone Grill | Reservation App'
+}
+
 export default function RestaurantDetails() {
     return (
         <>
