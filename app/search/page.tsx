@@ -14,7 +14,7 @@ const prisma = new PrismaClient();
 
 export const metadata: Metadata = {
     title: 'Search | Reservation App'
-}
+};
 
 const fetchRestaurantsByCity = async (city = '') => {
     const restaurants = await prisma.restaurant.findMany({
@@ -28,7 +28,7 @@ const fetchRestaurantsByCity = async (city = '') => {
     });
 
     return restaurants;
-}
+};
 
 export default async function Search({ searchParams: { city } }: Props) {
     const restaurants = await fetchRestaurantsByCity(city);
@@ -46,4 +46,4 @@ export default async function Search({ searchParams: { city } }: Props) {
             </div>
         </>
     )
-}
+};
