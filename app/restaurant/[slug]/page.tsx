@@ -1,3 +1,4 @@
+import { PrismaClient } from "@prisma/client";
 import RestaurantNavBar from "./components/RestaurantNavBar";
 import Rating from "./components/Rating";
 import Images from "./components/Images";
@@ -8,29 +9,39 @@ export const metadata = {
     title: 'Milesstone Grill | Reservation App'
 }
 
-export default function RestaurantDetails() {
+const prisma = new PrismaClient();
+
+const fetchRestaurantsBySlug = async (slug: string) => {
+    const restaurant = await prisma.restaurant.findUnique({ where: { slug } });
+
+    if (!restaurant) {
+        throw new Error();
+    }
+
+    return restaurant;
+};
+
+type Props = {
+    params: {
+        slug: string;
+    }
+};
+
+export default async function RestaurantDetails({ params: { slug } }: Props) {
+    const restaurant = await fetchRestaurantsBySlug(slug);
+
     return (
         <>
             <div className="bg-white w-[70%] rounded p-3 shadow">
-                <RestaurantNavBar />
-                {/* TITLE */}
+                <RestaurantNavBar slug={restaurant.slug} />
                 <div className="mt-4 border-b pb-6">
-                    <h1 className="font-bold text-6xl">Milesstone Grill</h1>
+                    <h1 className="font-bold text-6xl">{restaurant.name}</h1>
                 </div>
-                {/* TITLE */}
                 <Rating />
-                {/* DESCRIPTION */}
                 <div className="mt-4">
-                    <p className="text-lg font-light">
-                        The classics you love prepared with a perfect twist, all served up
-                        in an atmosphere that feels just right. That’s the Milestones
-                        promise. So, whether you’re celebrating a milestone, making the most
-                        of Happy Hour or enjoying brunch with friends, you can be sure that
-                        every Milestones experience is a simple and perfectly memorable one.
-                    </p>
+                    <p className="text-lg font-light">{restaurant.description}</p>
                 </div>
-                {/* DESCRIPTION */}
-                <Images />
+                <Images images={restaurant.images} />
                 <Reviews />
             </div>
             <div className="w-[27%] relative text-reg">
