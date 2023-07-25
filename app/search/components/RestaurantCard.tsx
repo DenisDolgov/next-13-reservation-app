@@ -1,9 +1,12 @@
-import { Restaurant } from "@prisma/client";
+import {Cuisine, Location, Restaurant} from "@prisma/client";
 import Price from "@/app/components/Price";
 import Link from "next/link";
 
 type Props = {
-    restaurant: Pick<Restaurant, 'id'|'slug'|'main_image'|'name'|'price'>
+    restaurant: Pick<Restaurant, 'id'|'slug'|'main_image'|'name'|'price'> & {
+        location: Location,
+        cuisine: Cuisine,
+    }
 };
 
 export default function RestaurantCard({ restaurant }: Props) {
@@ -23,8 +26,8 @@ export default function RestaurantCard({ restaurant }: Props) {
                 <div className="mb-9">
                     <div className="font-light flex text-reg">
                         <Price price={restaurant.price} className="mr-4" />
-                        <p className="mr-4">Mexican</p>
-                        <p className="mr-4">Ottawa</p>
+                        <p className="mr-4">{restaurant.cuisine.name}</p>
+                        <p className="mr-4">{restaurant.location.name}</p>
                     </div>
                 </div>
                 <div className="text-red-600">

@@ -16,18 +16,29 @@ export const metadata: Metadata = {
     title: 'Search | Reservation App'
 };
 
-const fetchRestaurantsByCity = async (city = '') => {
-    const restaurants = await prisma.restaurant.findMany({
+const fetchRestaurantsByCity = (city?: string) => {
+    const select = {
+        id: true,
+        name: true,
+        main_image: true,
+        slug: true,
+        price: true,
+        cuisine: true,
+        location: true,
+    };
+
+    if (!city) return prisma.restaurant.findMany({ select });
+
+    return prisma.restaurant.findMany({
         where: {
             location: {
                 name: {
-                    contains: city,
+                    contains: city.toLowerCase(),
                 },
             }
-        }
+        },
+        select,
     });
-
-    return restaurants;
 };
 
 export default async function Search({ searchParams: { city } }: Props) {
@@ -39,9 +50,12 @@ export default async function Search({ searchParams: { city } }: Props) {
             <div className="flex py-4 m-auto w-2/3 justify-between items-start">
                 <SearchSideBar/>
                 <div className="w-5/6">
-                    {restaurants.map(restaurant => (
-                        <RestaurantCard key={restaurant.id} restaurant={restaurant}/>
-                    ))}
+                    {restaurants.length
+                        ? restaurants.map(restaurant => (
+                            <RestaurantCard key={restaurant.id} restaurant={restaurant}/>
+                        ))
+                        : <div>No result found</div>
+                    }
                 </div>
             </div>
         </>
