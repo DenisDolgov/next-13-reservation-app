@@ -5,5 +5,5 @@ export const calcReviewRatingAverage = (reviews: Review[]) => {
 
     const sum = reviews.reduce((sum, item) => sum + item.rating, 0);
 
-    return Number((sum / reviews.length).toFixed(2));
+    return Number((sum / reviews.length).toFixed(1));
 };

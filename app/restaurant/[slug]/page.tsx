@@ -12,7 +12,17 @@ export const metadata = {
 const prisma = new PrismaClient();
 
 const fetchRestaurantsBySlug = async (slug: string) => {
-    const restaurant = await prisma.restaurant.findUnique({ where: { slug } });
+    const restaurant = await prisma.restaurant.findUnique({
+        where: { slug },
+        select: {
+            id: true,
+            slug: true,
+            name: true,
+            description: true,
+            images: true,
+            reviews: true,
+        }
+    });
 
     if (!restaurant) {
         throw new Error();
@@ -37,12 +47,12 @@ export default async function RestaurantDetails({ params: { slug } }: Props) {
                 <div className="mt-4 border-b pb-6">
                     <h1 className="font-bold text-6xl">{restaurant.name}</h1>
                 </div>
-                <Rating />
+                <Rating reviews={restaurant.reviews} />
                 <div className="mt-4">
                     <p className="text-lg font-light">{restaurant.description}</p>
                 </div>
                 <Images images={restaurant.images} />
-                <Reviews />
+                <Reviews reviews={restaurant.reviews} />
             </div>
             <div className="w-[27%] relative text-reg">
                 <ReservationCard />
