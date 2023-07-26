@@ -13,6 +13,7 @@ const fetchRestaurants = () => prisma.restaurant.findMany({
         location: true,
         price: true,
         slug: true,
+        reviews: true,
     },
 });
 

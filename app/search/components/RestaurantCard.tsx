@@ -1,15 +1,31 @@
-import {Cuisine, Location, Restaurant} from "@prisma/client";
+import {Cuisine, Location, Restaurant, Review} from "@prisma/client";
 import Price from "@/app/components/Price";
 import Link from "next/link";
+import {calcReviewRatingAverage} from "@/utils/calcReviewRatingAverage";
+import Rate from "@/app/components/Rate";
 
 type Props = {
     restaurant: Pick<Restaurant, 'id'|'slug'|'main_image'|'name'|'price'> & {
-        location: Location,
-        cuisine: Cuisine,
+        location: Location;
+        cuisine: Cuisine;
+        reviews: Review[];
     }
 };
 
+const getRatingText = (reviews: Review[]) => {
+    const averageRating = calcReviewRatingAverage(reviews);
+
+    if (averageRating === 0) return '';
+    if (averageRating > 4) return 'Awesome';
+    if (averageRating <= 4 && averageRating > 3) return 'Good';
+    if (averageRating <= 3 && averageRating > 2) return 'Average';
+    if (averageRating <= 2) return 'Bad';
+}
+
 export default function RestaurantCard({ restaurant }: Props) {
+    const ratingText = getRatingText(restaurant.reviews);
+    const avgRating = calcReviewRatingAverage(restaurant.reviews);
+
     return (
         <div className="border-b flex pb-5">
             <img
@@ -20,8 +36,8 @@ export default function RestaurantCard({ restaurant }: Props) {
             <div className="pl-5">
                 <h2 className="text-3xl">{restaurant.name}</h2>
                 <div className="flex items-start">
-                    <div className="flex mb-2">*****</div>
-                    <p className="ml-2 text-sm">Awesome</p>
+                    <Rate rating={avgRating} />
+                    {ratingText && <p className="ml-2 text-sm">{ratingText}</p>}
                 </div>
                 <div className="mb-9">
                     <div className="font-light flex text-reg">
