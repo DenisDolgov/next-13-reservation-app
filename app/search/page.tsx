@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     title: 'Search | Reservation App'
 };
 
-const fetchRestaurantsByLocation = (location?: string) => {
+const fetchRestaurantsBySearchParams = ({ location, price, cuisine }: SearchParams) => {
     const select = {
         id: true,
         name: true,
@@ -25,17 +25,30 @@ const fetchRestaurantsByLocation = (location?: string) => {
         cuisine: true,
         location: true,
     };
-
-    if (!location) return prisma.restaurant.findMany({ select });
-
-    return prisma.restaurant.findMany({
-        where: {
+    const where = {
+        ...(location ? {
             location: {
                 name: {
                     equals: location.toLowerCase(),
                 },
+            }
+        } : {}),
+        ...(price ? {
+            price: {
+                equals: price,
             },
-        },
+        } : {}),
+        ...(cuisine ? {
+            cuisine: {
+                name: {
+                    equals: cuisine.toLowerCase(),
+                },
+            }
+        } : {}),
+    };
+
+    return prisma.restaurant.findMany({
+        where,
         select,
     });
 };
@@ -45,11 +58,14 @@ const fetchLocations = () => prisma.location.findMany();
 const fetchCuisines = () => prisma.cuisine.findMany();
 
 export default async function Search({ searchParams }: Props) {
-    const [restaurants, locations, cuisines] = await Promise.all([
-        fetchRestaurantsByLocation(searchParams.location),
-        fetchLocations(),
-        fetchCuisines(),
-    ]);
+    // const [restaurants, locations, cuisines] = await Promise.all([
+    //     fetchRestaurantsBySearchParams(searchParams),
+    //     fetchLocations(),
+    //     fetchCuisines(),
+    // ]);
+    const restaurants = await fetchRestaurantsBySearchParams(searchParams);
+    const locations = await fetchLocations();
+    const cuisines = await fetchCuisines();
 
     return (
         <>
